@@ -1,0 +1,13 @@
+---
+version: '3'
+services:
+  postgresql:
+    image: postgres:12
+    container_name: uberpopug_postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pwd
+      POSTGRES_DB: uberpopug
+      POSTGRES_HOST_AUTH_METHOD: trust
