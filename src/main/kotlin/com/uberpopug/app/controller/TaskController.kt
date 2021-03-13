@@ -21,8 +21,8 @@ class TaskController(val taskService: TaskService) {
     }
 
     @GetMapping("/v1/task/{taskId}")
-    fun getTaskById(@PathVariable taskId: String): Task {
-        return taskService.getTaskById(taskId)
+    fun showTask(@PathVariable taskId: String): Task {
+        return taskService.show(taskId)
     }
 
     @PostMapping("/v1/task/assign")

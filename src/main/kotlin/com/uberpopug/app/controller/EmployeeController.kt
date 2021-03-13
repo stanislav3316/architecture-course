@@ -21,7 +21,7 @@ class EmployeeController(val employeeService: EmployeeService) {
     }
 
     @GetMapping("/v1/employee/{employeeId}")
-    fun getEmployeeById(@PathVariable employeeId: String): Employee {
-        return employeeService.getById(employeeId)
+    fun showEmployee(@PathVariable employeeId: String): Employee {
+        return employeeService.show(employeeId)
     }
 }

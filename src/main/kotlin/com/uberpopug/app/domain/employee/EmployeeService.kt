@@ -11,7 +11,7 @@ class EmployeeService(val employeeRepository: EmployeeRepository) {
         return employeeRepository.save(employee)
     }
 
-    fun getById(employeeId: String): Employee {
+    fun show(employeeId: String): Employee {
         return employeeRepository.findById(employeeId).orElseGet {
             throw EmployeeNotFound(employeeId)
         }

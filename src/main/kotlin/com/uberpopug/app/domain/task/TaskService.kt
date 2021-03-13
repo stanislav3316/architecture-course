@@ -16,7 +16,7 @@ class TaskService(
         return taskRepository.save(task)
     }
 
-    fun getTaskById(taskId: String): Task {
+    fun show(taskId: String): Task {
         return taskRepository.findById(taskId).orElseGet {
             throw TaskNotFound(taskId)
         }
