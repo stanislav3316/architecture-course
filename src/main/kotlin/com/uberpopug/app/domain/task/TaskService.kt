@@ -22,9 +22,12 @@ class TaskService(
         }
     }
 
-    fun assignNewTasks() {
-        val newTasks = taskRepository.findAllByStatus(TaskStatus.NEW)
-        newTasks.forEach { task ->
+    fun assignTasks() {
+        val tasksForAssign =
+            taskRepository.findAllByStatus(TaskStatus.NEW) +
+            taskRepository.findAllByStatus(TaskStatus.IN_PROGRESS)
+
+        tasksForAssign.forEach { task ->
             val employee = employeeService.findRandomOne()
             val assignedTask = task.assignEmployee(employee.employeeId!!)
 
@@ -32,21 +35,6 @@ class TaskService(
             notificationService.notifyAssignedEmployee(
                 taskId = assignedTask.taskId!!,
                 employeeId = assignedTask.assignedToEmployeeId!!
-            )
-        }
-    }
-
-    fun reassignInProgressTasks() {
-        val taskInProgress = taskRepository.findAllByStatus(TaskStatus.IN_PROGRESS)
-        taskInProgress.forEach { task ->
-            val employee = employeeService.findRandomOne()
-            val reassignedTask = task.reassignEmployee(employee.employeeId!!)
-
-            taskRepository.save(reassignedTask)
-            notificationService.notifyReassignedEmployee(
-                taskId = reassignedTask.taskId!!,
-                newEmployeeId = reassignedTask.assignedToEmployeeId!!,
-                previousEmployeeId = task.assignedToEmployeeId!!
             )
         }
     }

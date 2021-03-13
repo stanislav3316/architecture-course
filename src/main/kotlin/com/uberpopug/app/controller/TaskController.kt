@@ -27,10 +27,7 @@ class TaskController(val taskService: TaskService) {
 
     @PostMapping("/v1/task/assign")
     fun assignTasks() {
-        taskService.apply {
-            assignNewTasks()
-            reassignInProgressTasks()
-        }
+        taskService.assignTasks()
     }
 
     @PostMapping("/v1/task/{taskId}/complete")

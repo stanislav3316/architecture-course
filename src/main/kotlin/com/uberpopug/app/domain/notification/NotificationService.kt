@@ -12,9 +12,4 @@ class NotificationService {
     fun notifyAssignedEmployee(taskId: String, employeeId: String) {
         log.info("employee - $employeeId was assigned with task - $taskId")
     }
-
-    //todo: should be TaskReassigned event
-    fun notifyReassignedEmployee(taskId: String, newEmployeeId: String, previousEmployeeId: String) {
-        log.info("employee - $newEmployeeId was assigned with task - $taskId, previous was - $previousEmployeeId")
-    }
 }
