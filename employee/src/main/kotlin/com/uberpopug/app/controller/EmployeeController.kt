@@ -10,15 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
-import java.security.Principal
 
 @RestController
 class EmployeeController(val employeeService: EmployeeService) {
-
-    @GetMapping("/user/me")
-    fun profile(user: Principal): Principal {
-        return user
-    }
 
     @PostMapping("/v1/employee")
     @ResponseStatus(value = HttpStatus.CREATED)
