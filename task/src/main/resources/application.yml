@@ -1,6 +1,4 @@
 spring:
-  thymeleaf:
-    cache: false
   application:
     name: uberpopug
   profiles:

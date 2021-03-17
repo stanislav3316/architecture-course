@@ -33,7 +33,6 @@ dependencies {
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 
     runtimeOnly("org.postgresql:postgresql")
-    runtimeOnly("org.glassfish.jaxb:jaxb-runtime")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
