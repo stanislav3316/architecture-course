@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: uberpopug
+  profiles:
+    active: ${APP_PROFILE:default}
+  main:
+    banner-mode: off
+  jpa:
+    properties:
+      hibernate:
+        generate_statistics: true
+  datasource:
+    hikari:
+      idle-timeout: 10000
+      connection-timeout: 1000
+      maximum-pool-size: 5
+      pool-name: ${spring.application.name}
+    url: jdbc:postgresql://${DB_HOST:127.0.0.1}:${DB_PORT:5432}/${DB_NAME:uberpopug}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASS:pwd}
+
