@@ -1,11 +1,21 @@
 ---
 version: '3'
 services:
-  postgresql:
+  postgresql-employee:
     image: postgres:12
-    container_name: uberpopug_postgres
+    container_name: uberpopug_postgres-employee
     ports:
       - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pwd
+      POSTGRES_DB: uberpopug
+      POSTGRES_HOST_AUTH_METHOD: trust
+  postgresql-task:
+    image: postgres:12
+    container_name: uberpopug_postgres-task
+    ports:
+      - 5433:5432
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: pwd
