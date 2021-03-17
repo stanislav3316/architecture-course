@@ -25,9 +25,9 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
     override fun configure(auth: AuthenticationManagerBuilder) {
         auth
             .inMemoryAuthentication()
-            .withUser("test")
-            .password(passwordEncoder().encode("test"))
-            .roles("USER")
+            .withUser("admin")
+            .password(passwordEncoder().encode("admin"))
+            .roles("ADMIN")
     }
 
     @Bean

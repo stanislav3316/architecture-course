@@ -24,7 +24,7 @@ class OAuth2AuthorizationServer(
     override fun configure(clients: ClientDetailsServiceConfigurer) {
         clients
             .inMemory()
-            .withClient("R2dpxQ3vPrtfgF72")
+            .withClient("task-app")
             .secret(passwordEncoder.encode("fDw7Mpkk5czHNuSRtmhGmAGL42CaxQB9"))
             .authorizedGrantTypes("authorization_code")
             .scopes("user_info")

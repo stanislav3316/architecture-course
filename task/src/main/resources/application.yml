@@ -26,7 +26,7 @@ spring:
       client:
         registration:
           auth-client:
-            client-id: R2dpxQ3vPrtfgF72
+            client-id: task-app
             client-secret: fDw7Mpkk5czHNuSRtmhGmAGL42CaxQB9
             client-name: Auth Server
             scope: user_info
@@ -36,9 +36,9 @@ spring:
             client-authentication-method: basic
         provider:
           auth-app:
-            authorization-uri: http://localhost:8081/auth/oauth/authorize
-            token-uri: http://localhost:8081/auth/oauth/token
-            user-info-uri: http://localhost:8081/auth/user/me
+            authorization-uri: http://localhost:8081/oauth/authorize
+            token-uri: http://localhost:8081/oauth/token
+            user-info-uri: http://localhost:8081/user/me
             user-name-attribute: name
 
 server:
