@@ -11,8 +11,3 @@ class TaskNotInProgress(taskId: String) : TaskException("task - $taskId not in p
 class TaskAlreadyClosed(taskId: String) : TaskException("task - $taskId already closed", "taskAlreadyClosed")
 
 class TaskCanNotBeAssigned(taskId: String) : TaskException("task - $taskId cannot be assigned", "taskCanNotBeAssigned")
-
-class TaskCanNotBeReassigned(taskId: String) : TaskException(
-    "task - $taskId cannot be assigned",
-    "taskCanNotBeReassigned"
-)
