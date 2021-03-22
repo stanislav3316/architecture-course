@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service
 
 @Service
 class TaskService(
-    val taskRepository: TaskRepository,
-    val employeeClient: EmployeeClient,
-    val notificationService: NotificationService,
-    val kafkaTemplate: KafkaTemplate<Any, Any>
+    private val taskRepository: TaskRepository,
+    private val employeeClient: EmployeeClient,
+    private val notificationService: NotificationService,
+    private val kafkaTemplate: KafkaTemplate<Any, Any>
 ) {
     private val kafkaAggregateTopic = "task-aggregate"
 

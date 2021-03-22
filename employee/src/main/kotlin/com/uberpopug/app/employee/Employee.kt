@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.OffsetDateTime
 import java.time.OffsetDateTime.now
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
@@ -17,6 +19,8 @@ data class Employee(
     val firstName: String,
     val lastName: String,
     val phoneNumber: String,
+    @Enumerated(EnumType.STRING)
+    val role: EmployeeRole,
     val createdAt: OffsetDateTime,
     @Version
     @JsonIgnore
@@ -36,10 +40,25 @@ data class Employee(
                 employeeId = null,
                 firstName = command.firstName,
                 lastName = command.lastName,
+                role = command.role,
                 phoneNumber = command.phoneNumber,
                 createdAt = now(),
                 version = 0
             )
         }
     }
+
+    fun changeRole(newRole: EmployeeRole): Employee {
+        if (newRole == role) {
+            throw EmployeeHasTheSameRole(employeeId!!, newRole)
+        }
+
+        return copy(role = newRole)
+    }
+}
+
+enum class EmployeeRole {
+    EMPLOYEE,
+    ADMIN,
+    MANAGER
 }
