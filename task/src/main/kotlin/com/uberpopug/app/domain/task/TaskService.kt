@@ -17,7 +17,7 @@ class TaskService(
     fun create(command: CreateNewTaskCommand): Task {
         val task = Task.create(command)
         return taskRepository.save(task).apply {
-            kafkaTemplate.send(kafkaAggregateTopic, TaskCreated(this))
+            kafkaTemplate.send(kafkaAggregateTopic, TaskCreated(this.toTaskData()))
         }
     }
 
@@ -37,7 +37,7 @@ class TaskService(
             val assignedTask = task.assignEmployee(employee.employeeId)
 
             taskRepository.save(assignedTask).apply {
-                kafkaTemplate.send(kafkaAggregateTopic, TaskAssigned(this))
+                kafkaTemplate.send(kafkaAggregateTopic, TaskAssigned(this.toTaskData()))
             }
 
             notificationService.notifyAssignedEmployee(
@@ -54,7 +54,7 @@ class TaskService(
 
         val completedTask = task.complete()
         taskRepository.save(completedTask).apply {
-            kafkaTemplate.send(kafkaAggregateTopic, TaskCompleted(this))
+            kafkaTemplate.send(kafkaAggregateTopic, TaskCompleted(this.toTaskData()))
         }
     }
 
@@ -65,7 +65,7 @@ class TaskService(
 
         val closedTask = task.close()
         taskRepository.save(closedTask).apply {
-            kafkaTemplate.send(kafkaAggregateTopic, TaskClosed(this))
+            kafkaTemplate.send(kafkaAggregateTopic, TaskClosed(this.toTaskData()))
         }
     }
 
@@ -73,3 +73,13 @@ class TaskService(
         return taskRepository.findAllByAssignedToEmployeeId(employeeId)
     }
 }
+
+private fun Task.toTaskData() = TaskData(
+    taskId = taskId!!,
+    title = title,
+    description = description,
+    assignedToEmployeeId = assignedToEmployeeId,
+    createdByEmployeeId = createdByEmployeeId,
+    status = status.name,
+    createdAt = createdAt
+)

@@ -14,7 +14,7 @@ class EmployeeService(
     fun create(command: CreateEmployee): Employee {
         val employee = Employee.create(command)
         return employeeRepository.save(employee).apply {
-            kafkaTemplate.send(kafkaAggregateTopic, EmployeeCreated(this))
+            kafkaTemplate.send(kafkaAggregateTopic, EmployeeCreated(this.toEventData()))
         }
     }
 
@@ -26,7 +26,7 @@ class EmployeeService(
 
         val employeeWithChangedRole = employee.changeRole(command.newRole)
         employeeRepository.save(employeeWithChangedRole).apply {
-            kafkaTemplate.send(kafkaAggregateTopic, EmployeeRoleChanged(this))
+            kafkaTemplate.send(kafkaAggregateTopic, EmployeeRoleChanged(this.toEventData()))
         }
     }
 
@@ -41,7 +41,7 @@ class EmployeeService(
             throw EmployeeNotFound(phone)
         }
 
-        kafkaTemplate.send(kafkaAggregateTopic, EmployeeAuthenticated(employee))
+        kafkaTemplate.send(kafkaAggregateTopic, EmployeeAuthenticated(employee.toEventData()))
 
         return employee
     }
@@ -60,3 +60,12 @@ class EmployeeService(
         ).first()
     }
 }
+
+private fun Employee.toEventData() = EmployeeData(
+    employeeId = employeeId!!,
+    firstName = firstName,
+    lastName = lastName,
+    phoneNumber = phoneNumber,
+    role = role.name,
+    createdAt = createdAt
+)
