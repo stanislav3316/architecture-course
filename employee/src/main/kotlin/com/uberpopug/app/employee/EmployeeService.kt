@@ -1,5 +1,9 @@
 package com.uberpopug.app.employee
 
+import com.uberpopug.schema.EmployeeAuthenticated
+import com.uberpopug.schema.EmployeeCreated
+import com.uberpopug.schema.EmployeeData
+import com.uberpopug.schema.EmployeeRoleChanged
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import kotlin.random.Random

@@ -1,4 +1,4 @@
-package com.uberpopug.app.employee
+package com.uberpopug.schema
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import java.time.OffsetDateTime

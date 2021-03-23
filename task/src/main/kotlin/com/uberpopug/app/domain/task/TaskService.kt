@@ -2,6 +2,11 @@ package com.uberpopug.app.domain.task
 
 import com.uberpopug.app.client.EmployeeClient
 import com.uberpopug.app.domain.notification.NotificationService
+import com.uberpopug.schema.TaskAssigned
+import com.uberpopug.schema.TaskClosed
+import com.uberpopug.schema.TaskCompleted
+import com.uberpopug.schema.TaskCreated
+import com.uberpopug.schema.TaskData
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 

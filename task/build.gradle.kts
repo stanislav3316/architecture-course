@@ -33,6 +33,8 @@ dependencies {
 
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 
+    implementation(project(":event-schema"))
+
     runtimeOnly("org.postgresql:postgresql")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test") {

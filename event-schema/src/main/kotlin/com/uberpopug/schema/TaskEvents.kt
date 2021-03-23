@@ -1,4 +1,4 @@
-package com.uberpopug.app.domain.task
+package com.uberpopug.schema
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import java.time.OffsetDateTime
