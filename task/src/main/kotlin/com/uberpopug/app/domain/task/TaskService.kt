@@ -1,12 +1,11 @@
 package com.uberpopug.app.domain.task
 
+import com.uberpopug.app.asTaskAssignedEvent
+import com.uberpopug.app.asTaskClosedEvent
+import com.uberpopug.app.asTaskCompletedEvent
+import com.uberpopug.app.asTaskCreatedEvent
 import com.uberpopug.app.client.EmployeeClient
 import com.uberpopug.app.domain.notification.NotificationService
-import com.uberpopug.schema.TaskAssigned
-import com.uberpopug.schema.TaskClosed
-import com.uberpopug.schema.TaskCompleted
-import com.uberpopug.schema.TaskCreated
-import com.uberpopug.schema.TaskData
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 
@@ -22,7 +21,7 @@ class TaskService(
     fun create(command: CreateNewTaskCommand): Task {
         val task = Task.create(command)
         return taskRepository.save(task).apply {
-            kafkaTemplate.send(kafkaAggregateTopic, TaskCreated(this.toTaskData()))
+            kafkaTemplate.send(kafkaAggregateTopic, this.asTaskCreatedEvent())
         }
     }
 
@@ -42,7 +41,7 @@ class TaskService(
             val assignedTask = task.assignEmployee(employee.employeeId)
 
             taskRepository.save(assignedTask).apply {
-                kafkaTemplate.send(kafkaAggregateTopic, TaskAssigned(this.toTaskData()))
+                kafkaTemplate.send(kafkaAggregateTopic, this.asTaskAssignedEvent())
             }
 
             notificationService.notifyAssignedEmployee(
@@ -59,7 +58,7 @@ class TaskService(
 
         val completedTask = task.complete()
         taskRepository.save(completedTask).apply {
-            kafkaTemplate.send(kafkaAggregateTopic, TaskCompleted(this.toTaskData()))
+            kafkaTemplate.send(kafkaAggregateTopic, this.asTaskCompletedEvent())
         }
     }
 
@@ -70,7 +69,7 @@ class TaskService(
 
         val closedTask = task.close()
         taskRepository.save(closedTask).apply {
-            kafkaTemplate.send(kafkaAggregateTopic, TaskClosed(this.toTaskData()))
+            kafkaTemplate.send(kafkaAggregateTopic, this.asTaskClosedEvent())
         }
     }
 
@@ -78,13 +77,3 @@ class TaskService(
         return taskRepository.findAllByAssignedToEmployeeId(employeeId)
     }
 }
-
-private fun Task.toTaskData() = TaskData(
-    taskId = taskId!!,
-    title = title,
-    description = description,
-    assignedToEmployeeId = assignedToEmployeeId,
-    createdByEmployeeId = createdByEmployeeId,
-    status = status.name,
-    createdAt = createdAt
-)

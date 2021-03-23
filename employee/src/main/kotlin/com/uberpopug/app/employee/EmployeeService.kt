@@ -1,9 +1,8 @@
 package com.uberpopug.app.employee
 
-import com.uberpopug.schema.EmployeeAuthenticated
-import com.uberpopug.schema.EmployeeCreated
-import com.uberpopug.schema.EmployeeData
-import com.uberpopug.schema.EmployeeRoleChanged
+import com.uberpopug.app.asEmployeeAuthenticatedEvent
+import com.uberpopug.app.asEmployeeCreatedEvent
+import com.uberpopug.app.asEmployeeRoleChangedEvent
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import kotlin.random.Random
@@ -18,7 +17,7 @@ class EmployeeService(
     fun create(command: CreateEmployee): Employee {
         val employee = Employee.create(command)
         return employeeRepository.save(employee).apply {
-            kafkaTemplate.send(kafkaAggregateTopic, EmployeeCreated(this.toEventData()))
+            kafkaTemplate.send(kafkaAggregateTopic, this.asEmployeeCreatedEvent())
         }
     }
 
@@ -30,7 +29,7 @@ class EmployeeService(
 
         val employeeWithChangedRole = employee.changeRole(command.newRole)
         employeeRepository.save(employeeWithChangedRole).apply {
-            kafkaTemplate.send(kafkaAggregateTopic, EmployeeRoleChanged(this.toEventData()))
+            kafkaTemplate.send(kafkaAggregateTopic, this.asEmployeeRoleChangedEvent())
         }
     }
 
@@ -45,7 +44,7 @@ class EmployeeService(
             throw EmployeeNotFound(phone)
         }
 
-        kafkaTemplate.send(kafkaAggregateTopic, EmployeeAuthenticated(employee.toEventData()))
+        kafkaTemplate.send(kafkaAggregateTopic, employee.asEmployeeAuthenticatedEvent())
 
         return employee
     }
@@ -64,12 +63,3 @@ class EmployeeService(
         ).first()
     }
 }
-
-private fun Employee.toEventData() = EmployeeData(
-    employeeId = employeeId!!,
-    firstName = firstName,
-    lastName = lastName,
-    phoneNumber = phoneNumber,
-    role = role.name,
-    createdAt = createdAt
-)

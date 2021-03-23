@@ -9,22 +9,25 @@ sealed class EmployeeDomainEvent<T>(
     val payload: T,
     val eventName: String,
     val eventVersion: Int,
+    val producer: String,
     val eventId: String = UUID.randomUUID().toString(),
-    val eventTime: OffsetDateTime = OffsetDateTime.now(),
-    val producer: String = "task-service"
+    val eventTime: OffsetDateTime = OffsetDateTime.now()
 )
 
 class EmployeeCreated(
-    payload: EmployeeData
-) : EmployeeDomainEvent<EmployeeData>(payload, "employee-created", 1)
+    payload: EmployeeData,
+    producer: String
+) : EmployeeDomainEvent<EmployeeData>(payload, "employee-created", 1, producer)
 
 class EmployeeRoleChanged(
-    payload: EmployeeData
-) : EmployeeDomainEvent<EmployeeData>(payload, "employee-role-changed", 1)
+    payload: EmployeeData,
+    producer: String
+) : EmployeeDomainEvent<EmployeeData>(payload, "employee-role-changed", 1, producer)
 
 class EmployeeAuthenticated(
-    payload: EmployeeData
-) : EmployeeDomainEvent<EmployeeData>(payload, "employee-authenticated", 1)
+    payload: EmployeeData,
+    producer: String
+) : EmployeeDomainEvent<EmployeeData>(payload, "employee-authenticated", 1, producer)
 
 // класс для данных о Employee, который шарится в либе и доступен для версии v1 в событиях
 data class EmployeeData(

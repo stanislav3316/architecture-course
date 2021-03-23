@@ -10,18 +10,30 @@ sealed class TaskDomainEvent<T>(
     val payload: T,
     val eventName: String,
     val eventVersion: Int,
+    val producer: String,
     val eventId: String = UUID.randomUUID().toString(),
-    val eventTime: OffsetDateTime = now(),
-    val producer: String = "task-service"
+    val eventTime: OffsetDateTime = now()
 )
 
-class TaskCreated(payload: TaskData) : TaskDomainEvent<TaskData>(payload, "task-created", 1)
+class TaskCreated(
+    payload: TaskData,
+    producer: String
+) : TaskDomainEvent<TaskData>(payload, "task-created", 1, producer)
 
-class TaskAssigned(payload: TaskData) : TaskDomainEvent<TaskData>(payload, "task-assigned", 1)
+class TaskAssigned(
+    payload: TaskData,
+    producer: String
+) : TaskDomainEvent<TaskData>(payload, "task-assigned", 1, producer)
 
-class TaskCompleted(payload: TaskData) : TaskDomainEvent<TaskData>(payload, "task-completed", 1)
+class TaskCompleted(
+    payload: TaskData,
+    producer: String
+) : TaskDomainEvent<TaskData>(payload, "task-completed", 1, producer)
 
-class TaskClosed(payload: TaskData) : TaskDomainEvent<TaskData>(payload, "task-closed", 1)
+class TaskClosed(
+    payload: TaskData,
+    producer: String
+) : TaskDomainEvent<TaskData>(payload, "task-closed", 1, producer)
 
 // класс для данных о Task, который шарится в либе и доступен для версии v1 в событиях
 data class TaskData(
