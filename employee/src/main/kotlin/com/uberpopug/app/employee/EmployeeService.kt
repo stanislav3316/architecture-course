@@ -19,8 +19,8 @@ class EmployeeService(
         val employee = Employee.create(command)
         return employeeRepository.save(employee).apply {
             val event = this.asEmployeeCreatedEvent()
-            kafkaTemplate.send(businessTopic, event)
-            kafkaTemplate.send(streamTopic, event)
+            kafkaTemplate.send(businessTopic, this.employeeId!!, event)
+            kafkaTemplate.send(streamTopic, this.employeeId!!, event)
         }
     }
 
@@ -32,7 +32,7 @@ class EmployeeService(
 
         val employeeWithChangedRole = employee.changeRole(command.newRole)
         employeeRepository.save(employeeWithChangedRole).apply {
-            kafkaTemplate.send(streamTopic, this.asEmployeeRoleChangedEvent())
+            kafkaTemplate.send(streamTopic, this.employeeId!!, this.asEmployeeRoleChangedEvent())
         }
     }
 
@@ -47,7 +47,7 @@ class EmployeeService(
             throw EmployeeNotFound(phone)
         }
 
-        kafkaTemplate.send(streamTopic, employee.asEmployeeAuthenticatedEvent())
+        kafkaTemplate.send(streamTopic, employee.employeeId!!, employee.asEmployeeAuthenticatedEvent())
 
         return employee
     }

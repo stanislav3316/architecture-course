@@ -23,8 +23,8 @@ class TaskService(
         val task = Task.create(command)
         return taskRepository.save(task).apply {
             val event = this.asTaskCreatedEvent()
-            kafkaTemplate.send(businessTopic, event)
-            kafkaTemplate.send(streamTopic, event)
+            kafkaTemplate.send(businessTopic, this.taskId!!, event)
+            kafkaTemplate.send(streamTopic, this.taskId!!, event)
         }
     }
 
@@ -45,8 +45,8 @@ class TaskService(
 
             taskRepository.save(assignedTask).apply {
                 val event = this.asTaskAssignedEvent()
-                kafkaTemplate.send(businessTopic, event)
-                kafkaTemplate.send(streamTopic, event)
+                kafkaTemplate.send(businessTopic, this.taskId!!, event)
+                kafkaTemplate.send(streamTopic, this.taskId!!, event)
             }
 
             notificationService.notifyAssignedEmployee(
@@ -64,8 +64,8 @@ class TaskService(
         val completedTask = task.complete()
         taskRepository.save(completedTask).apply {
             val event = this.asTaskCompletedEvent()
-            kafkaTemplate.send(businessTopic, event)
-            kafkaTemplate.send(streamTopic, event)
+            kafkaTemplate.send(businessTopic, this.taskId!!, event)
+            kafkaTemplate.send(streamTopic, this.taskId!!, event)
         }
     }
 
@@ -76,7 +76,7 @@ class TaskService(
 
         val closedTask = task.close()
         taskRepository.save(closedTask).apply {
-            kafkaTemplate.send(streamTopic, this.asTaskClosedEvent())
+            kafkaTemplate.send(streamTopic, this.taskId!!, this.asTaskClosedEvent())
         }
     }
 
