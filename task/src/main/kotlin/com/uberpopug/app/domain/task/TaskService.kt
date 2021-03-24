@@ -16,12 +16,15 @@ class TaskService(
     private val notificationService: NotificationService,
     private val kafkaTemplate: KafkaTemplate<Any, Any>
 ) {
-    private val kafkaAggregateTopic = "task-aggregate"
+    private val businessTopic = "task-aggregate"
+    private val streamTopic = "task-stream"
 
     fun create(command: CreateNewTaskCommand): Task {
         val task = Task.create(command)
         return taskRepository.save(task).apply {
-            kafkaTemplate.send(kafkaAggregateTopic, this.asTaskCreatedEvent())
+            val event = this.asTaskCreatedEvent()
+            kafkaTemplate.send(businessTopic, event)
+            kafkaTemplate.send(streamTopic, event)
         }
     }
 
@@ -41,7 +44,9 @@ class TaskService(
             val assignedTask = task.assignEmployee(employee.employeeId)
 
             taskRepository.save(assignedTask).apply {
-                kafkaTemplate.send(kafkaAggregateTopic, this.asTaskAssignedEvent())
+                val event = this.asTaskAssignedEvent()
+                kafkaTemplate.send(businessTopic, event)
+                kafkaTemplate.send(streamTopic, event)
             }
 
             notificationService.notifyAssignedEmployee(
@@ -58,7 +63,9 @@ class TaskService(
 
         val completedTask = task.complete()
         taskRepository.save(completedTask).apply {
-            kafkaTemplate.send(kafkaAggregateTopic, this.asTaskCompletedEvent())
+            val event = this.asTaskCompletedEvent()
+            kafkaTemplate.send(businessTopic, event)
+            kafkaTemplate.send(streamTopic, event)
         }
     }
 
@@ -69,7 +76,7 @@ class TaskService(
 
         val closedTask = task.close()
         taskRepository.save(closedTask).apply {
-            kafkaTemplate.send(kafkaAggregateTopic, this.asTaskClosedEvent())
+            kafkaTemplate.send(streamTopic, this.asTaskClosedEvent())
         }
     }
 

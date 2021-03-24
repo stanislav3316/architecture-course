@@ -12,12 +12,15 @@ class EmployeeService(
     private val employeeRepository: EmployeeRepository,
     private val kafkaTemplate: KafkaTemplate<Any, Any>
 ) {
-    private val kafkaAggregateTopic = "employee-aggregate"
+    private val businessTopic = "employee-aggregate"
+    private val streamTopic = "employee-stream"
 
     fun create(command: CreateEmployee): Employee {
         val employee = Employee.create(command)
         return employeeRepository.save(employee).apply {
-            kafkaTemplate.send(kafkaAggregateTopic, this.asEmployeeCreatedEvent())
+            val event = this.asEmployeeCreatedEvent()
+            kafkaTemplate.send(businessTopic, event)
+            kafkaTemplate.send(streamTopic, event)
         }
     }
 
@@ -29,7 +32,7 @@ class EmployeeService(
 
         val employeeWithChangedRole = employee.changeRole(command.newRole)
         employeeRepository.save(employeeWithChangedRole).apply {
-            kafkaTemplate.send(kafkaAggregateTopic, this.asEmployeeRoleChangedEvent())
+            kafkaTemplate.send(streamTopic, this.asEmployeeRoleChangedEvent())
         }
     }
 
@@ -44,7 +47,7 @@ class EmployeeService(
             throw EmployeeNotFound(phone)
         }
 
-        kafkaTemplate.send(kafkaAggregateTopic, employee.asEmployeeAuthenticatedEvent())
+        kafkaTemplate.send(streamTopic, employee.asEmployeeAuthenticatedEvent())
 
         return employee
     }
