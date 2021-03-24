@@ -21,6 +21,16 @@ services:
       POSTGRES_PASSWORD: pwd
       POSTGRES_DB: uberpopug
       POSTGRES_HOST_AUTH_METHOD: trust
+  postgresql-accounting:
+    image: postgres:12
+    container_name: uberpopug_postgres-task
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pwd
+      POSTGRES_DB: uberpopug
+      POSTGRES_HOST_AUTH_METHOD: trust
   zookeeper:
     image: bitnami/zookeeper:latest
     ports:
