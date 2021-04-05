@@ -16,7 +16,7 @@ class TaskService(
     private val notificationService: NotificationService,
     private val kafkaTemplate: KafkaTemplate<Any, Any>
 ) {
-    private val businessTopic = "task-aggregate"
+    private val businessTopic = "task"
     private val streamTopic = "task-stream"
 
     fun create(command: CreateNewTaskCommand): Task {

@@ -12,7 +12,7 @@ class EmployeeService(
     private val employeeRepository: EmployeeRepository,
     private val kafkaTemplate: KafkaTemplate<Any, Any>
 ) {
-    private val businessTopic = "employee-aggregate"
+    private val businessTopic = "employee"
     private val streamTopic = "employee-stream"
 
     fun create(command: CreateEmployee): Employee {

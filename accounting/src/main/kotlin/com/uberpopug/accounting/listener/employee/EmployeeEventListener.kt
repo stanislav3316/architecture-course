@@ -18,7 +18,7 @@ class EmployeeEventListener(
     private val log = LoggerFactory.getLogger(EmployeeEventListener::class.java)
 
     @KafkaListener(
-        topics = ["employee-aggregate"],
+        topics = ["employee"],
         groupId = "accounting-service"
     )
     fun onDomainEvent(@Payload event: String, acknowledgment: Acknowledgment) {

@@ -2,7 +2,9 @@ CREATE TABLE task(
     task_id                 TEXT        NOT NULL PRIMARY KEY,
     assigned_to_employee_id TEXT        NULL,
     status                  TEXT        NOT NULL,
-    price                   NUMERIC     NOT NULL
+    assigned_task_value     NUMERIC     NOT NULL,
+    completed_task_value    NUMERIC     NOT NULL,
+    version                 NUMERIC     NOT NULL
 );
 
 CREATE TABLE employee(
@@ -11,6 +13,7 @@ CREATE TABLE employee(
     last_name    TEXT        NOT NULL,
     phone_number TEXT        NOT NULL,
     role         TEXT        NOT NULL,
+    version      NUMERIC     NOT NULL,
 
     CONSTRAINT uq_phone_number UNIQUE(phone_number)
 );
@@ -21,6 +24,7 @@ CREATE TABLE transaction(
     type           TEXT        NOT NULL,
     to_account     TEXT        NOT NULL,
     from_account   TEXT        NOT NULL,
+    task_id        TEXT        NULL,
     created_at     TIMESTAMPTZ NOT NULL
 );
 
