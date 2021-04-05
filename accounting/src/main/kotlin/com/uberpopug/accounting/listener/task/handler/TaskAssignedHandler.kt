@@ -22,7 +22,7 @@ class TaskAssignedHandler(
 
         transactionTemplate.execute {
             val task = taskService.find(event.taskId)
-            taskService.markTaskAsAssigned(taskId = event.taskId, assignedToEmployeeId = event.assignedToEmployeeId)
+            taskService.markAsAssigned(taskId = event.taskId, assignedToEmployeeId = event.assignedToEmployeeId)
             accountingService.payForAssignedTask(task = task, employeeId = event.assignedToEmployeeId)
         }
     }

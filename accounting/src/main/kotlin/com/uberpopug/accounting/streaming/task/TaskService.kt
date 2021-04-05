@@ -28,7 +28,7 @@ class TaskService(
         }
     }
 
-    fun markTaskAsAssigned(taskId: String, assignedToEmployeeId: String) {
+    fun markAsAssigned(taskId: String, assignedToEmployeeId: String) {
         val task = find(taskId)
         val assignedTask = task.asAssigned(assignedToEmployeeId)
         taskRepository.save(assignedTask)

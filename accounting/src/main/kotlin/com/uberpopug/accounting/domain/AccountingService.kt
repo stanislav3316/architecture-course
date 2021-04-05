@@ -32,46 +32,44 @@ class AccountingService(
     @Transactional
     fun payForCompletedTask(employeeId: String, task: Task) {
 
-        val employeeAccount = accountRepository.findAccountByEmployeeId(employeeId).orElseThrow {
-            throw IllegalStateException("employee account wasn't opened")
-        }
+        val employeeAccount = findByEmployeeId(employeeId)
+        val completedTaskValue = task.completedTaskValue
 
-        val completedValue = task.completedTaskValue
-
-        val transaction = Transaction.taskCompleted(
-            completedTaskValue = completedValue,
-            employeeAccountId = employeeAccount.accountId!!,
-            taskId = task.taskId
+        transactionRepository.save(
+            Transaction.taskCompleted(
+                completedTaskValue = completedTaskValue,
+                employeeAccountId = employeeAccount.accountId!!,
+                taskId = task.taskId
+            )
         )
-        transactionRepository.save(transaction)
 
-        val refilledAccount = employeeAccount.refill(completedValue)
-        accountRepository.save(refilledAccount)
+        accountRepository.save(
+            employeeAccount.refill(completedTaskValue)
+        )
 
-        val event = PayedForCompletedTask("accounting", employeeAccount.accountId!!, completedValue)
+        val event = PayedForCompletedTask("accounting", employeeAccount.accountId!!, completedTaskValue)
         kafkaTemplate.send(streamTopic, employeeAccount.accountId!!, event)
     }
 
     @Transactional
     fun payForAssignedTask(employeeId: String, task: Task) {
 
-        val employeeAccount = accountRepository.findAccountByEmployeeId(employeeId).orElseThrow {
-            throw IllegalStateException("employee account wasn't opened")
-        }
+        val employeeAccount = findByEmployeeId(employeeId)
+        val assignTaskValue = task.assignedTaskValue
 
-        val assignValue = task.assignedTaskValue
-
-        val transaction = Transaction.taskAssigned(
-            assignedTaskValue = assignValue,
-            employeeAccountId = employeeAccount.accountId!!,
-            taskId = task.taskId
+        transactionRepository.save(
+            Transaction.taskAssigned(
+                assignedTaskValue = assignTaskValue,
+                employeeAccountId = employeeAccount.accountId!!,
+                taskId = task.taskId
+            )
         )
-        transactionRepository.save(transaction)
 
-        val withdrawnAccount = employeeAccount.withdraw(assignValue)
-        accountRepository.save(withdrawnAccount)
+        accountRepository.save(
+            employeeAccount.withdraw(assignTaskValue)
+        )
 
-        val event = PayedForAssignedTask("accounting", employeeAccount.accountId!!, assignValue)
+        val event = PayedForAssignedTask("accounting", employeeAccount.accountId!!, assignTaskValue)
         kafkaTemplate.send(streamTopic, employeeAccount.accountId!!, event)
     }
 
@@ -81,19 +79,27 @@ class AccountingService(
         accountRepository.findAll().forEach { account ->
             if (account.amount > BigDecimal.ZERO) {
 
-                val transaction = Transaction.closedDay(
-                    amount = account.amount,
-                    employeeAccountId = account.accountId!!
+                transactionRepository.save(
+                    Transaction.closedDay(
+                        amount = account.amount,
+                        employeeAccountId = account.accountId!!
+                    )
                 )
-                transactionRepository.save(transaction)
 
-                val withdrawnAccount = account.fullWithdraw()
-                accountRepository.save(withdrawnAccount)
+                accountRepository.save(
+                    account.fullWithdraw()
+                )
 
                 val event = EmployeeDayClosed("accounting", account.employeeId, account.accountId!!, account.amount)
                 kafkaTemplate.send(businessTopic, account.accountId!!, event)
                 kafkaTemplate.send(streamTopic, account.accountId!!, event)
             }
+        }
+    }
+
+    fun findByEmployeeId(employeeId: String): Account {
+        return accountRepository.findAccountByEmployeeId(employeeId).orElseThrow {
+            throw IllegalStateException("employee account wasn't opened")
         }
     }
 }
