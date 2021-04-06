@@ -10,5 +10,7 @@ data class Employee(
     val firstName: String,
     val lastName: String,
     val phoneNumber: String,
+    val email: String,
+    val slack: String,
     val role: String
 )

@@ -11,6 +11,8 @@ CREATE TABLE employee(
     first_name   TEXT        NOT NULL,
     last_name    TEXT        NOT NULL,
     phone_number TEXT        NOT NULL,
+    email        TEXT        NOT NULL,
+    slack        TEXT        NOT NULL,
     role         TEXT        NOT NULL,
 
     CONSTRAINT uq_phone_number UNIQUE(phone_number)

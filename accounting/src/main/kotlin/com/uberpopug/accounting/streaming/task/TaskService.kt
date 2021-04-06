@@ -19,8 +19,7 @@ class TaskService(
             completedTaskValue = estimateValue(smallestValue = 20, biggestValue = 40),
             assignedTaskValue = estimateValue(smallestValue = 10, biggestValue = 20),
             assignedToEmployeeId = assignedToEmployeeId,
-            status = status,
-            version = 0
+            status = status
         )
 
         taskRepository.save(task).apply {

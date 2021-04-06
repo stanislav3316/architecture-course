@@ -27,8 +27,9 @@ class EmployeeCreatedHandler(
             firstName = event.firstName,
             lastName = event.lastName,
             phoneNumber = event.phoneNumber,
-            role = event.role,
-            version = 0
+            email = event.email,
+            slack = event.slack,
+            role = event.role
         )
 
         transactionTemplate.execute {
