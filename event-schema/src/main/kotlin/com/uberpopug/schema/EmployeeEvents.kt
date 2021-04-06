@@ -8,6 +8,8 @@ class EmployeeCreated(
     val firstName: String,
     val lastName: String,
     val phoneNumber: String,
+    val slack: String,
+    val email: String,
     val role: String,
     val createdAt: OffsetDateTime
 ) : AppEvent(
