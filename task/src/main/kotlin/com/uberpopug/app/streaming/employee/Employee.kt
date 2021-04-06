@@ -1,0 +1,16 @@
+package com.uberpopug.app.streaming.employee
+
+import javax.persistence.Entity
+import javax.persistence.Id
+
+@Entity
+data class Employee(
+    @Id
+    val employeeId: String,
+    val firstName: String,
+    val lastName: String,
+    val phoneNumber: String,
+    val email: String,
+    val slack: String,
+    val role: String
+)

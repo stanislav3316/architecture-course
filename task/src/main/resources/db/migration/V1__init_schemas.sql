@@ -8,3 +8,15 @@ CREATE TABLE task(
     created_at              TIMESTAMPTZ NOT NULL,
     version                 NUMERIC     NOT NULL
 );
+
+CREATE TABLE employee(
+     employee_id  TEXT        NOT NULL PRIMARY KEY,
+     first_name   TEXT        NOT NULL,
+     last_name    TEXT        NOT NULL,
+     phone_number TEXT        NOT NULL,
+     slack        TEXT        NOT NULL,
+     email        TEXT        NOT NULL,
+     role         TEXT        NOT NULL,
+
+     CONSTRAINT uq_phone_number UNIQUE(phone_number)
+);

@@ -1,4 +1,4 @@
-package com.uberpopug.app.domain.task
+package com.uberpopug.app.domain
 
 interface TaskCommand
 

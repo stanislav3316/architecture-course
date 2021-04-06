@@ -1,4 +1,4 @@
-package com.uberpopug.app.domain.task
+package com.uberpopug.app.domain
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
