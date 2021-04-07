@@ -15,7 +15,9 @@ class AccountOpened(
 class PayedForAssignedTask(
     eventProducer: String,
     val accountId: String,
-    val amount: BigDecimal
+    val amount: BigDecimal,
+    val taskId: String,
+    val transactionId: String
 ) : AppEvent(
     meta = EventMetaData("payed-for-assigned-task", 1, eventProducer)
 )
@@ -23,7 +25,9 @@ class PayedForAssignedTask(
 class PayedForCompletedTask(
     eventProducer: String,
     val accountId: String,
-    val amount: BigDecimal
+    val amount: BigDecimal,
+    val taskId: String,
+    val transactionId: String
 ) : AppEvent(
     meta = EventMetaData("payed-for-completed-task", 1, eventProducer)
 )
@@ -32,7 +36,8 @@ class EmployeeDayClosed(
     eventProducer: String,
     val employeeId: String,
     val accountId: String,
-    val amount: BigDecimal
+    val amount: BigDecimal,
+    val transactionId: String
 ) : AppEvent(
     meta = EventMetaData("employee-day-closed", 1, eventProducer)
 )

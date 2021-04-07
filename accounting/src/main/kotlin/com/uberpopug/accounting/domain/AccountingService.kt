@@ -35,7 +35,7 @@ class AccountingService(
         val employeeAccount = findByEmployeeId(employeeId)
         val completedTaskValue = task.completedTaskValue
 
-        transactionRepository.save(
+        val transaction = transactionRepository.save(
             Transaction.taskCompleted(
                 completedTaskValue = completedTaskValue,
                 employeeAccountId = employeeAccount.accountId!!,
@@ -47,7 +47,13 @@ class AccountingService(
             employeeAccount.refill(completedTaskValue)
         )
 
-        val event = PayedForCompletedTask("accounting", employeeAccount.accountId!!, completedTaskValue)
+        val event = PayedForCompletedTask(
+            "accounting",
+            employeeAccount.accountId!!,
+            completedTaskValue,
+            task.taskId,
+            transaction.transactionId!!
+        )
         kafkaTemplate.send(streamTopic, employeeAccount.accountId!!, event)
     }
 
@@ -57,7 +63,7 @@ class AccountingService(
         val employeeAccount = findByEmployeeId(employeeId)
         val assignTaskValue = task.assignedTaskValue
 
-        transactionRepository.save(
+        val transaction = transactionRepository.save(
             Transaction.taskAssigned(
                 assignedTaskValue = assignTaskValue,
                 employeeAccountId = employeeAccount.accountId!!,
@@ -69,7 +75,13 @@ class AccountingService(
             employeeAccount.withdraw(assignTaskValue)
         )
 
-        val event = PayedForAssignedTask("accounting", employeeAccount.accountId!!, assignTaskValue)
+        val event = PayedForAssignedTask(
+            "accounting",
+            employeeAccount.accountId!!,
+            assignTaskValue,
+            task.taskId,
+            transaction.transactionId!!
+        )
         kafkaTemplate.send(streamTopic, employeeAccount.accountId!!, event)
     }
 
@@ -79,7 +91,7 @@ class AccountingService(
         accountRepository.findAll().forEach { account ->
             if (account.amount > BigDecimal.ZERO) {
 
-                transactionRepository.save(
+                val transaction = transactionRepository.save(
                     Transaction.closedDay(
                         amount = account.amount,
                         employeeAccountId = account.accountId!!
@@ -90,7 +102,13 @@ class AccountingService(
                     account.fullWithdraw()
                 )
 
-                val event = EmployeeDayClosed("accounting", account.employeeId, account.accountId!!, account.amount)
+                val event = EmployeeDayClosed(
+                    "accounting",
+                    account.employeeId,
+                    account.accountId!!,
+                    account.amount,
+                    transaction.transactionId!!
+                )
                 kafkaTemplate.send(businessTopic, account.accountId!!, event)
                 kafkaTemplate.send(streamTopic, account.accountId!!, event)
             }

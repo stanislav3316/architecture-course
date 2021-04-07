@@ -32,7 +32,7 @@ CREATE TABLE account(
     account_id      TEXT        NOT NULL PRIMARY KEY DEFAULT substr(md5(random()::text), 0, 20),
     amount          NUMERIC     NOT NULL,
     status          TEXT        NOT NULL,
-    last_closed_day DATE,
+    last_closed_day DATE        NULL,
     last_update_at  TIMESTAMPTZ NOT NULL,
     created_at      TIMESTAMPTZ NOT NULL,
     version         NUMERIC     NOT NULL
