@@ -15,7 +15,7 @@ spring:
       connection-timeout: 1000
       maximum-pool-size: 5
       pool-name: ${spring.application.name}
-    url: jdbc:postgresql://${DB_HOST:127.0.0.1}:${DB_PORT:5432}/${DB_NAME:uberpopug}
+    url: jdbc:postgresql://${DB_HOST:127.0.0.1}:${DB_PORT:5434}/${DB_NAME:uberpopug}
     username: ${DB_USER:postgres}
     password: ${DB_PASS:pwd}
   kafka:
@@ -25,7 +25,7 @@ spring:
       missing-topics-fatal: false
       ack-mode: manual_immediate
     producer:
-      client-id: employee-service
+      client-id: acounting-service
     consumer:
       auto-offset-reset: latest
 

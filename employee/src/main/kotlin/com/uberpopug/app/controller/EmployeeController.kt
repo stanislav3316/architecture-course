@@ -1,5 +1,6 @@
 package com.uberpopug.app.controller
 
+import com.uberpopug.app.employee.ChangeEmployeeRole
 import com.uberpopug.app.employee.CreateEmployee
 import com.uberpopug.app.employee.Employee
 import com.uberpopug.app.employee.EmployeeService
@@ -18,6 +19,11 @@ class EmployeeController(val employeeService: EmployeeService) {
     @ResponseStatus(value = HttpStatus.CREATED)
     fun createEmployee(@RequestBody command: CreateEmployee): Employee {
         return employeeService.create(command)
+    }
+
+    @PostMapping("/v1/employee/changeRole")
+    fun changeRole(@RequestBody command: ChangeEmployeeRole) {
+        employeeService.changeRole(command)
     }
 
     @GetMapping("/v1/employee/random")

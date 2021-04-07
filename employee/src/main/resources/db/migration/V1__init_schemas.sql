@@ -3,6 +3,7 @@ CREATE TABLE employee(
     first_name   TEXT        NOT NULL,
     last_name    TEXT        NOT NULL,
     phone_number TEXT        NOT NULL,
+    role         TEXT        NOT NULL,
     created_at   TIMESTAMPTZ NOT NULL,
     version      NUMERIC     NOT NULL,
 

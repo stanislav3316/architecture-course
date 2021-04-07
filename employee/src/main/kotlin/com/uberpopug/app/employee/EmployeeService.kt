@@ -1,37 +1,55 @@
 package com.uberpopug.app.employee
 
+import com.uberpopug.app.asEmployeeAuthenticatedEvent
+import com.uberpopug.app.asEmployeeCreatedEvent
+import com.uberpopug.app.asEmployeeRoleChangedEvent
+import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
-import java.time.OffsetDateTime
-import javax.annotation.PostConstruct
 import kotlin.random.Random
 
 @Service
-class EmployeeService(val employeeRepository: EmployeeRepository) {
-
-    @PostConstruct
-    fun init() {
-        //todo: tmp -> for test OAuth only
-        employeeRepository.save(
-            Employee(
-                employeeId = null,
-                firstName = "aaaa",
-                lastName = "bbbb",
-                phoneNumber = "+79045578397",
-                createdAt = OffsetDateTime.now(),
-                version = 0
-            )
-        )
-    }
+class EmployeeService(
+    private val employeeRepository: EmployeeRepository,
+    private val kafkaTemplate: KafkaTemplate<Any, Any>
+) {
+    private val businessTopic = "employee"
+    private val streamTopic = "employee-stream"
 
     fun create(command: CreateEmployee): Employee {
         val employee = Employee.create(command)
-        return employeeRepository.save(employee)
+        return employeeRepository.save(employee).apply {
+            val event = this.asEmployeeCreatedEvent()
+            kafkaTemplate.send(businessTopic, this.employeeId!!, event)
+            kafkaTemplate.send(streamTopic, this.employeeId!!, event)
+        }
+    }
+
+    fun changeRole(command: ChangeEmployeeRole) {
+        val employeeId = command.employeeId
+        val employee = employeeRepository.findById(employeeId).orElseGet {
+            throw EmployeeNotFound(employeeId)
+        }
+
+        val employeeWithChangedRole = employee.changeRole(command.newRole)
+        employeeRepository.save(employeeWithChangedRole).apply {
+            kafkaTemplate.send(streamTopic, this.employeeId!!, this.asEmployeeRoleChangedEvent())
+        }
     }
 
     fun show(employeeId: String): Employee {
         return employeeRepository.findById(employeeId).orElseGet {
             throw EmployeeNotFound(employeeId)
         }
+    }
+
+    fun showForAuthentication(phone: String): Employee {
+        val employee = employeeRepository.findByPhoneNumber(phone).orElseGet {
+            throw EmployeeNotFound(phone)
+        }
+
+        kafkaTemplate.send(streamTopic, employee.employeeId!!, employee.asEmployeeAuthenticatedEvent())
+
+        return employee
     }
 
     fun findRandomOne(): Employee {

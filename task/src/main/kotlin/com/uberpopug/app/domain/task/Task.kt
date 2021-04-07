@@ -1,5 +1,6 @@
 package com.uberpopug.app.domain.task
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.OffsetDateTime
 import java.time.OffsetDateTime.now
 import javax.persistence.Entity
@@ -23,6 +24,7 @@ data class Task(
     val status: TaskStatus,
     val createdAt: OffsetDateTime,
     @Version
+    @JsonIgnore
     val version: Int
 ) {
     companion object {
@@ -68,15 +70,6 @@ data class Task(
             assignedToEmployeeId = employeeId,
             status = TaskStatus.IN_PROGRESS
         )
-    }
-
-    fun reassignEmployee(employeeId: String): Task {
-
-        if (status != TaskStatus.IN_PROGRESS) {
-            throw TaskCanNotBeReassigned(taskId!!)
-        }
-
-        return copy(assignedToEmployeeId = employeeId)
     }
 
     fun complete(): Task {
