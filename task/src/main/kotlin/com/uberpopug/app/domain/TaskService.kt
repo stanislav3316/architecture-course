@@ -1,19 +1,17 @@
-package com.uberpopug.app.domain.task
+package com.uberpopug.app.domain
 
 import com.uberpopug.app.asTaskAssignedEvent
 import com.uberpopug.app.asTaskClosedEvent
 import com.uberpopug.app.asTaskCompletedEvent
 import com.uberpopug.app.asTaskCreatedEvent
-import com.uberpopug.app.client.EmployeeClient
-import com.uberpopug.app.domain.notification.NotificationService
+import com.uberpopug.app.streaming.employee.EmployeeRepository
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 
 @Service
 class TaskService(
     private val taskRepository: TaskRepository,
-    private val employeeClient: EmployeeClient,
-    private val notificationService: NotificationService,
+    private val employeeRepository: EmployeeRepository,
     private val kafkaTemplate: KafkaTemplate<Any, Any>
 ) {
     private val businessTopic = "task"
@@ -40,7 +38,7 @@ class TaskService(
             taskRepository.findAllByStatus(TaskStatus.IN_PROGRESS)
 
         tasksForAssign.forEach { task ->
-            val employee = employeeClient.findRandomOne()
+            val employee = employeeRepository.findRandomOne()
             val assignedTask = task.assignEmployee(employee.employeeId)
 
             taskRepository.save(assignedTask).apply {
@@ -48,11 +46,6 @@ class TaskService(
                 kafkaTemplate.send(businessTopic, this.taskId!!, event)
                 kafkaTemplate.send(streamTopic, this.taskId!!, event)
             }
-
-            notificationService.notifyAssignedEmployee(
-                taskId = assignedTask.taskId!!,
-                employeeId = assignedTask.assignedToEmployeeId!!
-            )
         }
     }
 

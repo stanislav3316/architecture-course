@@ -19,6 +19,8 @@ data class Employee(
     val firstName: String,
     val lastName: String,
     val phoneNumber: String,
+    val email: String,
+    val slack: String,
     @Enumerated(EnumType.STRING)
     val role: EmployeeRole,
     val createdAt: OffsetDateTime,
@@ -42,6 +44,8 @@ data class Employee(
                 lastName = command.lastName,
                 role = command.role,
                 phoneNumber = command.phoneNumber,
+                email = command.email,
+                slack = command.slack,
                 createdAt = now(),
                 version = 0
             )

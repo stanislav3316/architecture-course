@@ -1,1 +1,1 @@
-include("task", "employee", "accounting", "event-schema")
+include("task", "employee", "accounting", "analytics", "event-schema")

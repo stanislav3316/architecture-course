@@ -11,6 +11,8 @@ fun Employee.asEmployeeCreatedEvent() = EmployeeCreated(
     firstName = this.firstName,
     lastName = this.lastName,
     phoneNumber = this.phoneNumber,
+    email = this.email,
+    slack = this.slack,
     role = this.role.name,
     createdAt = this.createdAt
 )

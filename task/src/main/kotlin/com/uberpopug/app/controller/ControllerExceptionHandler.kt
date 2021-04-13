@@ -1,6 +1,6 @@
 package com.uberpopug.app.controller
 
-import com.uberpopug.app.domain.task.TaskException
+import com.uberpopug.app.domain.TaskException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

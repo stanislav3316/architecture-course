@@ -1,4 +1,4 @@
-package com.uberpopug.accounting.streaming.employee
+package com.uberpopug.app.streaming.employee
 
 import javax.persistence.Entity
 import javax.persistence.Id

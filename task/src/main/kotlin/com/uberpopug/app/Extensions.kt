@@ -1,6 +1,6 @@
 package com.uberpopug.app
 
-import com.uberpopug.app.domain.task.Task
+import com.uberpopug.app.domain.Task
 import com.uberpopug.schema.TaskAssigned
 import com.uberpopug.schema.TaskClosed
 import com.uberpopug.schema.TaskCompleted

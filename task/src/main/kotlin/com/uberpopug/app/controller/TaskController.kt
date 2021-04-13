@@ -1,8 +1,8 @@
 package com.uberpopug.app.controller
 
-import com.uberpopug.app.domain.task.CreateNewTaskCommand
-import com.uberpopug.app.domain.task.Task
-import com.uberpopug.app.domain.task.TaskService
+import com.uberpopug.app.domain.CreateNewTaskCommand
+import com.uberpopug.app.domain.Task
+import com.uberpopug.app.domain.TaskService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
