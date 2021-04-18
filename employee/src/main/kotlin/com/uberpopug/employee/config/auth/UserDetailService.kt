@@ -3,7 +3,7 @@ package com.uberpopug.employee.config.auth
 import com.uberpopug.employee.domain.EmployeeNotFound
 import com.uberpopug.employee.domain.EmployeeService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -43,11 +43,11 @@ data class CustomUserDetail(
     val role: String
 ) : UserDetails {
 
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority>? = null
-    override fun getPassword(): String = userPassword
-    override fun getUsername(): String = phoneNumber
-    override fun isAccountNonExpired(): Boolean = true
-    override fun isAccountNonLocked(): Boolean = true
-    override fun isCredentialsNonExpired(): Boolean = true
-    override fun isEnabled(): Boolean = true
+    override fun getAuthorities() = mutableListOf(SimpleGrantedAuthority(role))
+    override fun getPassword() = userPassword
+    override fun getUsername() = phoneNumber
+    override fun isAccountNonExpired() = true
+    override fun isAccountNonLocked() = true
+    override fun isCredentialsNonExpired() = true
+    override fun isEnabled() = true
 }

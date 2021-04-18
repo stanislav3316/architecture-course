@@ -37,9 +37,9 @@ class OAuth2AuthorizationServer(
     }
 
     override fun configure(clients: ClientDetailsServiceConfigurer) {
+        val inmemoryClients = clients.inMemory()
         oauthServicesProperties.clients.forEach { client ->
-            clients
-                .inMemory()
+            inmemoryClients
                 .withClient(client.clientId)
                 .secret(passwordEncoder.encode(client.clientSecret))
                 .authorizedGrantTypes(client.authorizedGrandTypes)
