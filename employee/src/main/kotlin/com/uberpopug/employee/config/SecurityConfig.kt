@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.uberpopug.employee.config
 
 import com.uberpopug.employee.config.auth.UserDetailService
@@ -44,12 +42,6 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
         auth
             .userDetailsService(userDetailService)
             .passwordEncoder(passwordEncoder())
-
-        auth
-            .inMemoryAuthentication()
-            .withUser("admin")
-            .password(passwordEncoder().encode("admin"))
-            .roles("ADMIN")
     }
 
     @Bean

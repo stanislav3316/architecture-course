@@ -31,3 +31,27 @@ spring:
 
 server:
   port: 8081
+
+oauth:
+  clients:
+    -
+      client-id: task-app
+      client-secret: fDw7Mpkk5czHNuSRtmhGmAGL42CaxQB9
+      authorized-grand-types: authorization_code
+      scope: user_info
+      approve: true
+      redirect-url: http://localhost:8082/login/oauth2/code/
+    -
+      client-id: accounting-app
+      client-secret: NuSRtmhGmAGL42CaxQB9fDw7Mpkk5czH
+      authorized-grand-types: authorization_code
+      scope: user_info
+      approve: true
+      redirect-url: http://localhost:8083/login/oauth2/code/
+    -
+      client-id: analytics-app
+      client-secret: 5czHNuSRtmhGmAGL42CaxQB9fDw7Mpkk
+      authorized-grand-types: authorization_code
+      scope: user_info
+      approve: true
+      redirect-url: http://localhost:8084/login/oauth2/code/
