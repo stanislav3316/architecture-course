@@ -1,17 +1,14 @@
 package com.uberpopug.accounting.streaming.task
 
-import com.uberpopug.accounting.asTaskPriceEstimatedEvent
-import org.springframework.kafka.core.KafkaTemplate
+import com.uberpopug.accounting.publisher.AccountingPublisher
 import org.springframework.stereotype.Service
-import java.math.BigDecimal
 import kotlin.random.Random
 
 @Service
 class TaskService(
     private val taskRepository: TaskRepository,
-    private val kafkaTemplate: KafkaTemplate<Any, Any>
+    private val accountingPublisher: AccountingPublisher
 ) {
-    private val streamTopic = "accounting-streaming"
 
     fun estimateAndSave(taskId: String, assignedToEmployeeId: String?, status: String) {
         val task = Task(
@@ -23,7 +20,7 @@ class TaskService(
         )
 
         taskRepository.save(task).apply {
-            kafkaTemplate.send(streamTopic, this.asTaskPriceEstimatedEvent(), this.taskId)
+            accountingPublisher.onTaskEstimated(this)
         }
     }
 

@@ -1,13 +1,9 @@
 package com.uberpopug.accounting.domain
 
-import com.uberpopug.accounting.asAccountOpenedEvent
 import com.uberpopug.accounting.domain.transaction.Transaction
 import com.uberpopug.accounting.domain.transaction.TransactionRepository
+import com.uberpopug.accounting.publisher.AccountingPublisher
 import com.uberpopug.accounting.streaming.task.Task
-import com.uberpopug.schema.EmployeeDayClosed
-import com.uberpopug.schema.PayedForAssignedTask
-import com.uberpopug.schema.PayedForCompletedTask
-import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -16,16 +12,14 @@ import java.math.BigDecimal
 class AccountingService(
     private val transactionRepository: TransactionRepository,
     private val accountRepository: AccountRepository,
-    private val kafkaTemplate: KafkaTemplate<Any, Any>
+    private val accountingPublisher: AccountingPublisher
 ) {
-    private val businessTopic = "accounting"
-    private val streamTopic = "accounting-stream"
 
     @Transactional
     fun openNewAccount(employeeId: String) {
         val account = Account.new(employeeId)
         accountRepository.save(account).apply {
-            kafkaTemplate.send(streamTopic, this.accountId!!, this.asAccountOpenedEvent())
+            accountingPublisher.onNewAccount(this)
         }
     }
 
@@ -47,14 +41,12 @@ class AccountingService(
             employeeAccount.refill(completedTaskValue)
         )
 
-        val event = PayedForCompletedTask(
-            "accounting",
-            employeeAccount.accountId!!,
-            completedTaskValue,
-            task.taskId,
-            transaction.transactionId!!
+        accountingPublisher.onPayForCompletedTask(
+            account = employeeAccount,
+            completedTaskValue = completedTaskValue,
+            taskId = task.taskId,
+            transactionId = transaction.transactionId!!
         )
-        kafkaTemplate.send(streamTopic, employeeAccount.accountId!!, event)
     }
 
     @Transactional
@@ -75,14 +67,12 @@ class AccountingService(
             employeeAccount.withdraw(assignTaskValue)
         )
 
-        val event = PayedForAssignedTask(
-            "accounting",
-            employeeAccount.accountId!!,
-            assignTaskValue,
-            task.taskId,
-            transaction.transactionId!!
+        accountingPublisher.onPayForAssignedTask(
+            account = employeeAccount,
+            assignTaskValue = assignTaskValue,
+            taskId = task.taskId,
+            transactionId = transaction.transactionId!!
         )
-        kafkaTemplate.send(streamTopic, employeeAccount.accountId!!, event)
     }
 
     @Transactional
@@ -102,15 +92,7 @@ class AccountingService(
                     account.fullWithdraw()
                 )
 
-                val event = EmployeeDayClosed(
-                    "accounting",
-                    account.employeeId,
-                    account.accountId!!,
-                    account.amount,
-                    transaction.transactionId!!
-                )
-                kafkaTemplate.send(businessTopic, account.accountId!!, event)
-                kafkaTemplate.send(streamTopic, account.accountId!!, event)
+                accountingPublisher.onCloseEmployeesDay(account, transaction.transactionId!!)
             }
         }
     }
