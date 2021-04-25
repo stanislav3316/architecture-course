@@ -47,3 +47,5 @@ class TaskPublisher(
 
     private fun serializeEvent(event: AppEvent): String = mapper.writeValueAsString(event)
 }
+
+//todo: logs !
