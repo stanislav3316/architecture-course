@@ -9,8 +9,5 @@ import org.springframework.web.bind.annotation.RestController
 class OAuthController {
 
     @GetMapping("/me")
-    fun me(@AuthenticationPrincipal user: OAuth2User): OAuth2User {
-        //todo: for testing oauth only
-        return user
-    }
+    fun me(@AuthenticationPrincipal user: OAuth2User) = user
 }
