@@ -1,28 +1,20 @@
 package com.uberpopug.task.domain
 
-import com.uberpopug.app.asTaskAssignedEvent
-import com.uberpopug.app.asTaskClosedEvent
-import com.uberpopug.app.asTaskCompletedEvent
-import com.uberpopug.app.asTaskCreatedEvent
+import com.uberpopug.task.publisher.TaskPublisher
 import com.uberpopug.task.streaming.employee.EmployeeRepository
-import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 
 @Service
 class TaskService(
     private val taskRepository: TaskRepository,
     private val employeeRepository: EmployeeRepository,
-    private val kafkaTemplate: KafkaTemplate<Any, Any>
+    private val taskPublisher: TaskPublisher
 ) {
-    private val businessTopic = "task"
-    private val streamTopic = "task-stream"
 
     fun create(command: CreateNewTaskCommand): Task {
         val task = Task.create(command)
         return taskRepository.save(task).apply {
-            val event = this.asTaskCreatedEvent()
-            kafkaTemplate.send(businessTopic, this.taskId!!, event)
-            kafkaTemplate.send(streamTopic, this.taskId!!, event)
+            taskPublisher.onCreate(this)
         }
     }
 
@@ -42,9 +34,7 @@ class TaskService(
             val assignedTask = task.assignEmployee(employee.employeeId)
 
             taskRepository.save(assignedTask).apply {
-                val event = this.asTaskAssignedEvent()
-                kafkaTemplate.send(businessTopic, this.taskId!!, event)
-                kafkaTemplate.send(streamTopic, this.taskId!!, event)
+                taskPublisher.onAssign(this)
             }
         }
     }
@@ -56,9 +46,7 @@ class TaskService(
 
         val completedTask = task.complete()
         taskRepository.save(completedTask).apply {
-            val event = this.asTaskCompletedEvent()
-            kafkaTemplate.send(businessTopic, this.taskId!!, event)
-            kafkaTemplate.send(streamTopic, this.taskId!!, event)
+            taskPublisher.onComplete(this)
         }
     }
 
@@ -69,7 +57,7 @@ class TaskService(
 
         val closedTask = task.close()
         taskRepository.save(closedTask).apply {
-            kafkaTemplate.send(streamTopic, this.taskId!!, this.asTaskClosedEvent())
+            taskPublisher.onClose(this)
         }
     }
 

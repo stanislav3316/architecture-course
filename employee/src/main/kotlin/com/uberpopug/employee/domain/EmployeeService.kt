@@ -1,11 +1,7 @@
 package com.uberpopug.employee.domain
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.uberpopug.employee.asEmployeeAuthenticatedEvent
-import com.uberpopug.employee.asEmployeeCreatedEvent
-import com.uberpopug.employee.asEmployeeRoleChangedEvent
 import com.uberpopug.employee.config.SecurityConfig
-import org.springframework.kafka.core.KafkaTemplate
+import com.uberpopug.employee.publisher.EmployeePublisher
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import kotlin.random.Random
@@ -13,21 +9,15 @@ import kotlin.random.Random
 @Service
 class EmployeeService(
     private val employeeRepository: EmployeeRepository,
-    private val kafkaTemplate: KafkaTemplate<Any, Any>,
-    private val objectMapper: ObjectMapper
+    private val employeePublisher: EmployeePublisher
 ) {
-    private val businessTopic = "employee"
-    private val streamTopic = "employee-stream"
-
     private val passwordEncoder: PasswordEncoder = SecurityConfig.encoder
 
     fun create(command: CreateEmployee): Employee {
         val commandWithHashedPassword = command.copy(password = passwordEncoder.encode(command.password))
         val employee = Employee.create(commandWithHashedPassword)
         return employeeRepository.save(employee).apply {
-            val event = this.asEmployeeCreatedEvent()
-            kafkaTemplate.send(businessTopic, this.employeeId!!, event)
-            kafkaTemplate.send(streamTopic, this.employeeId!!, event)
+            employeePublisher.onCreate(this)
         }
     }
 
@@ -39,7 +29,7 @@ class EmployeeService(
 
         val employeeWithChangedRole = employee.changeRole(command.newRole)
         employeeRepository.save(employeeWithChangedRole).apply {
-            kafkaTemplate.send(streamTopic, this.employeeId!!, this.asEmployeeRoleChangedEvent())
+            employeePublisher.onRoleChanged(this)
         }
     }
 
@@ -54,13 +44,7 @@ class EmployeeService(
             throw EmployeeNotFound(phone)
         }
 
-        kafkaTemplate.send(
-            streamTopic,
-            employee.employeeId!!,
-            objectMapper.writeValueAsString(employee.asEmployeeAuthenticatedEvent())
-        )
-
-        //todo: !!!!
+        employeePublisher.onShowForAuthentication(employee)
 
         return employee
     }
