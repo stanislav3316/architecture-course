@@ -3,7 +3,7 @@ version: '3'
 services:
   postgresql-employee:
     image: postgres:12
-    container_name: uberpopug_postgres-employee
+    container_name: pg-employee
     ports:
       - 5432:5432
     environment:
@@ -13,7 +13,7 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
   postgresql-task:
     image: postgres:12
-    container_name: uberpopug_postgres-task
+    container_name: pg-task
     ports:
       - 5433:5432
     environment:
@@ -23,7 +23,7 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
   postgresql-accounting:
     image: postgres:12
-    container_name: uberpopug_postgres-task
+    container_name: pg-accounting
     ports:
       - 5434:5432
     environment:
@@ -33,7 +33,7 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
   postgresql-analytics:
     image: postgres:12
-    container_name: uberpopug_postgres-task
+    container_name: pg-analytics
     ports:
       - 5435:5432
     environment:
